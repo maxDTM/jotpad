@@ -62,3 +62,5 @@ See `man jotpad` for all configuration options.
 ## License
 
 GPL-3.0-or-later
+
+---
