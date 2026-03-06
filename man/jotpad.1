@@ -1,0 +1,72 @@
+.TH JOTPAD 1 "2025" "jotpad 1.0.0" "User Commands"
+.SH NAME
+jotpad \- minimal single-note editor with live markdown formatting
+.SH SYNOPSIS
+.B jotpad
+.SH DESCRIPTION
+.B Jotpad
+is a minimal desktop note editor that manages a single persistent note file.
+It auto-saves when typing stops and provides live inline markdown formatting
+with clickable hyperlinks.
+.PP
+On first run, Jotpad prompts for a file location to store the note.
+On subsequent runs, it opens the same file automatically.
+.SH FEATURES
+.IP \(bu 2
+Single persistent note file
+.IP \(bu 2
+Auto-save with 800ms debounce after typing stops
+.IP \(bu 2
+Live inline markdown formatting (headings, bold, italic, code, links)
+.IP \(bu 2
+Ctrl+click to open hyperlinks
+.IP \(bu 2
+Four built-in themes: Dark, Light, Solarized Dark, Solarized Light
+.IP \(bu 2
+Configurable font family and size
+.IP \(bu 2
+Markdown formatting can be toggled on/off
+.IP \(bu 2
+Window size and position remembered across sessions
+.SH FILES
+.TP
+.I ~/.config/jotpad/config
+Configuration file in plain key=value format.
+.PP
+The configuration file supports the following keys:
+.TP
+.B theme
+One of: dark, light, solarized_dark, solarized_light (default: dark)
+.TP
+.B font_family
+Font family name (default: monospace)
+.TP
+.B font_size
+Font size in pixels (default: 14)
+.TP
+.B note_path
+Absolute path to the note file
+.TP
+.B markdown_enabled
+Enable live markdown formatting: true or false (default: true)
+.TP
+.B window_width
+Window width in pixels
+.TP
+.B window_height
+Window height in pixels
+.TP
+.B window_x
+Window X position
+.TP
+.B window_y
+Window Y position
+.SH ENVIRONMENT
+.TP
+.B XDG_CONFIG_HOME
+If set, configuration is stored under $XDG_CONFIG_HOME/jotpad/ instead
+of ~/.config/jotpad/.
+.SH LICENSE
+GNU General Public License v3.0 or later.
+.SH SEE ALSO
+.BR xdg-open (1)

@@ -1,0 +1,25 @@
+Source: jotpad
+Section: editors
+Priority: optional
+Maintainer: Max Altshuler <m@jotpad.dev>
+Build-Depends: debhelper-compat (= 13),
+               dh-python,
+               python3-all,
+               python3-setuptools,
+               python3-wheel
+Standards-Version: 4.6.2
+Homepage: https://github.com/OWNER/jotpad
+Rules-Requires-Root: no
+
+Package: jotpad
+Architecture: all
+Depends: ${python3:Depends},
+         ${misc:Depends},
+         python3-pyside6
+Description: Minimal single-note editor with live markdown formatting
+ Jotpad is a minimal desktop note editor that manages a single persistent
+ note file. It auto-saves when typing stops and provides live inline
+ markdown formatting with clickable hyperlinks.
+ .
+ Features include four built-in themes, configurable fonts, and
+ Ctrl+click hyperlink opening.

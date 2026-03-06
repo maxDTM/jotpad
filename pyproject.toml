@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jotpad"
+version = "1.0.0"
+description = "A minimal single-note editor with live markdown formatting"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+requires-python = ">=3.9"
+authors = [
+    { name = "Max Altshuler" },
+]
+keywords = ["notes", "editor", "markdown", "minimal"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: Text Editors",
+]
+dependencies = [
+    "PySide6>=6.5",
+]
+
+[project.scripts]
+jotpad = "jotpad.app:main"
+
+[project.urls]
+Homepage = "https://github.com/maxDTM/jotpad"
+Repository = "https://github.com/maxDTM/jotpad"
+Issues = "https://github.com/maxDTM/jotpad/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]

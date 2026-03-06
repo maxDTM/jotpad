@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Jotpad
+GenericName=Note Editor
+Comment=Minimal single-note editor with live markdown formatting
+Exec=jotpad
+Icon=jotpad
+Terminal=false
+Categories=Utility;TextEditor;
+Keywords=notes;text;markdown;editor;
+StartupWMClass=jotpad
