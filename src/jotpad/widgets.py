@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QTextEdit,
     QVBoxLayout,
+    QLineEdit,
 )
 from PySide6.QtCore import Qt, QUrl, Signal
 from PySide6.QtGui import (
@@ -21,11 +22,11 @@ from PySide6.QtGui import (
     QFontDatabase,
     QPainter,
     QPen,
+    QKeySequence,
 )
 
 from jotpad.config import save_config
-from jotpad.themes import THEME_DISPLAY_NAMES
-
+from jotpad.themes import load_themes, get_display_names
 
 class GearButton(QPushButton):
     """Settings gear icon button rendered via QPainter."""
@@ -37,14 +38,27 @@ class GearButton(QPushButton):
         self._color = color
         self.setStyleSheet("background: transparent; border: none;")
 
-    def set_color(self, color):
+    def set_color(self, color, opacity=1.0):
         self._color = color
+        self._opacity = opacity
         self.update()
+
+    def enterEvent(self, event):
+        self._opacity = 1.0
+        self.update()
+        super().enterEvent(event)
+    
+    def leaveEvent(self, event):
+        self._opacity = 0.3
+        self.update()
+        super().leaveEvent(event)
 
     def paintEvent(self, event):
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
-        pen = QPen(QColor(self._color), 1.6)
+        color = QColor(self._color)
+        color.setAlphaF(self._opacity)
+        pen = QPen(color, 1.6)
         p.setPen(pen)
 
         cx, cy = 16, 16
@@ -81,6 +95,47 @@ class GearButton(QPushButton):
         p.end()
 
 
+class ShortcutEdit(QLineEdit):
+    """Click and press keys to record a shortcut."""
+
+    def __init__(self, shortcut_str="", parent=None):
+        super().__init__(parent)
+        self.setReadOnly(True)
+        self.setCursor(Qt.PointingHandCursor)
+        self.setAlignment(Qt.AlignCenter)
+        self._shortcut = shortcut_str
+        self.setText(shortcut_str)
+        self._recording = False
+
+    def mousePressEvent(self, event):
+        self._recording = True
+        self.setText("Press keys...")
+        super().mousePressEvent(event)
+
+    def keyPressEvent(self, event):
+        if not self._recording:
+            return
+        key = event.key()
+        if key in (Qt.Key_Control, Qt.Key_Shift, Qt.Key_Alt, Qt.Key_Meta):
+            return
+        modifiers = event.modifiers()
+        seq = QKeySequence(modifiers.value | key)
+        self._shortcut = seq.toString()
+        self.setText(self._shortcut)
+        self._recording = False
+        self.editingFinished.emit()
+        self.clearFocus()
+
+    def focusOutEvent(self, event):
+        if self._recording:
+            self._recording = False
+            self.setText(self._shortcut)
+        super().focusOutEvent(event)
+
+    def shortcut(self):
+        return self._shortcut
+
+
 class SettingsPanel(QFrame):
     """Slide-out settings panel."""
 
@@ -89,7 +144,6 @@ class SettingsPanel(QFrame):
     def __init__(self, config, parent=None):
         super().__init__(parent)
         self.config = config
-        self.setFixedWidth(280)
         self.setVisible(False)
 
         layout = QVBoxLayout(self)
@@ -104,10 +158,7 @@ class SettingsPanel(QFrame):
         # Theme
         layout.addWidget(QLabel("Theme"))
         self.theme_combo = QComboBox()
-        for key, name in THEME_DISPLAY_NAMES.items():
-            self.theme_combo.addItem(name, key)
-        idx = list(THEME_DISPLAY_NAMES.keys()).index(config.get("theme", "dark"))
-        self.theme_combo.setCurrentIndex(idx)
+        self._populate_themes(load_themes())
         self.theme_combo.currentIndexChanged.connect(self._on_theme_change)
         layout.addWidget(self.theme_combo)
 
@@ -139,33 +190,66 @@ class SettingsPanel(QFrame):
         layout.addWidget(self.size_combo)
 
         # Markdown toggle
-        layout.addWidget(QLabel("Markdown Formatting"))
-        self.md_combo = QComboBox()
-        self.md_combo.addItem("Enabled", True)
-        self.md_combo.addItem("Disabled", False)
-        self.md_combo.setCurrentIndex(0 if config.get("markdown_enabled", True) else 1)
-        self.md_combo.currentIndexChanged.connect(self._on_md_change)
-        layout.addWidget(self.md_combo)
+        layout.addWidget(QLabel("Auto-Detect Markdown"))
+        self.md_toggle = QPushButton()
+        self.md_toggle.setCursor(Qt.PointingHandCursor)
+        self._update_md_toggle()
+        self.md_toggle.clicked.connect(self._on_md_toggle)
+        layout.addWidget(self.md_toggle)
+
+        # Visual Separation Between Formatting and Functionality Settings
+        sep = QFrame()
+        sep.setFrameShape(QFrame.HLine)
+        sep.setFixedHeight(1)
+        layout.addWidget(sep)
 
         # Storage location
         layout.addWidget(QLabel("Note Location"))
-        self.storage_btn = QPushButton("Change...")
+        self.storage_btn = QPushButton()
         self.storage_btn.setCursor(Qt.PointingHandCursor)
+        self.storage_btn.setStyleSheet("text-align: right; padding: 6px 10px;")
         self.storage_btn.clicked.connect(self._on_change_storage)
+        self._update_storage_label()
         layout.addWidget(self.storage_btn)
 
-        self.storage_label = QLabel()
-        self.storage_label.setWordWrap(True)
-        self.storage_label.setStyleSheet("font-size: 11px;")
-        self._update_storage_label()
-        layout.addWidget(self.storage_label)
+        # Settings Shortcut
+        layout.addWidget(QLabel("Settings Shortcut"))
+        self.shortcut_edit = ShortcutEdit(config.get("settings_shortcut", "Ctrl+`"))
+        self.shortcut_edit.editingFinished.connect(self._on_shortcut_change)
+        layout.addWidget(self.shortcut_edit)
+
+        # Quit Program Shortcut
+        layout.addWidget(QLabel("Quit Shortcut"))
+        self.quit_shortcut_edit = ShortcutEdit(config.get("quit_shortcut", "Ctrl+Q"))
+        self.quit_shortcut_edit.editingFinished.connect(self._on_quit_shortcut_change)
+        layout.addWidget(self.quit_shortcut_edit)
 
         layout.addStretch()
 
     def _update_storage_label(self):
         p = self.config.get("note_path", "")
-        display = p if len(p) < 40 else "..." + p[-37:]
-        self.storage_label.setText(display)
+        metrics = self.storage_btn.fontMetrics()
+        available = self.storage_btn.width() - 24
+        if available < 50:
+            available = 220
+        elided = metrics.elidedText(p, Qt.ElideLeft, available)
+        self.storage_btn.setText(elided)
+        self.storage_btn.setToolTip(p)
+
+    def _populate_themes(self, themes):
+        self.theme_combo.blockSignals(True)
+        self.theme_combo.clear()
+        display = get_display_names(themes)
+        for slug, name in display.items():
+            self.theme_combo.addItem(name, slug)
+        current = self.config.get("theme", "dark")
+        idx = self.theme_combo.findData(current)
+        if idx >= 0:
+            self.theme_combo.setCurrentIndex(idx)
+        self.theme_combo.blockSignals(False)
+
+    def refresh_themes(self, themes):
+        self._populate_themes(themes)
 
     def _on_theme_change(self, idx):
         self.config["theme"] = self.theme_combo.currentData()
@@ -182,10 +266,17 @@ class SettingsPanel(QFrame):
         save_config(self.config)
         self.settings_changed.emit()
 
-    def _on_md_change(self, idx):
-        self.config["markdown_enabled"] = self.md_combo.currentData()
+    def _on_md_toggle(self):
+        self.config["markdown_enabled"] = not self.config.get("markdown_enabled", True)
         save_config(self.config)
+        self._update_md_toggle()
         self.settings_changed.emit()
+    
+    def _update_md_toggle(self):
+        if self.config.get("markdown_enabled", True):
+            self.md_toggle.setText("Disable")
+        else:
+            self.md_toggle.setText("Enable")
 
     def _on_change_storage(self):
         path, _ = QFileDialog.getSaveFileName(
@@ -200,12 +291,27 @@ class SettingsPanel(QFrame):
                 try:
                     content = Path(old_path).read_text()
                     Path(path).write_text(content)
+                    Path(old_path).unlink()
                 except Exception:
                     pass
             self.config["note_path"] = path
             save_config(self.config)
             self._update_storage_label()
             self.settings_changed.emit()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._update_storage_label()
+
+    def _on_shortcut_change(self):
+        self.config["settings_shortcut"] = self.shortcut_edit.shortcut()
+        save_config(self.config)
+        self.settings_changed.emit()
+
+    def _on_quit_shortcut_change(self):
+        self.config["quit_shortcut"] = self.quit_shortcut_edit.shortcut()
+        save_config(self.config)
+        self.settings_changed.emit()
 
     def apply_theme(self, theme):
         t = theme
@@ -214,6 +320,10 @@ class SettingsPanel(QFrame):
                 background: {t['surface']};
                 border-left: 1px solid {t['border']};
                 border-radius: 3px;
+            }}
+            QFrame[frameShape="4"] {{
+                background: {t['border']};
+                border: none;
             }}
             QLabel {{
                 color: {t['muted']};
@@ -248,6 +358,14 @@ class SettingsPanel(QFrame):
             }}
             QPushButton:hover {{
                 background: {t['highlight']};
+            }}
+            ShortcutEdit {{
+                background: {t['surface2']};
+                color: {t['text']};
+                border: 1px solid {t['border']};
+                border-radius: 4px;
+                padding: 6px 10px;
+                font-size: 13px;
             }}
         """)
         title = self.findChild(QLabel, "settings_title")

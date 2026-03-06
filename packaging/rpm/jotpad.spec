@@ -1,5 +1,5 @@
 Name:           jotpad
-Version:        1.0.0
+Version:        1.1.0
 Release:        1%{?dist}
 Summary:        Minimal single-note editor with live markdown formatting
 License:        GPL-3.0-or-later
@@ -34,6 +34,10 @@ install -Dm644 data/com.jotpad.Jotpad.desktop \
 install -Dm644 data/icons/jotpad.svg \
     %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/jotpad.svg
 
+install -dm755 %{buildroot}%{_datadir}/jotpad/themes
+install -Dm644 data/themes/*.conf \
+    %{buildroot}%{_datadir}/jotpad/themes/
+
 install -Dm644 man/jotpad.1 \
     %{buildroot}%{_mandir}/man1/jotpad.1
 
@@ -45,6 +49,7 @@ install -Dm644 man/jotpad.1 \
 %{python3_sitelib}/jotpad-*.dist-info/
 %{_datadir}/applications/com.jotpad.Jotpad.desktop
 %{_datadir}/icons/hicolor/scalable/apps/jotpad.svg
+%{_datadir}/jotpad/
 %{_mandir}/man1/jotpad.1*
 
 %changelog

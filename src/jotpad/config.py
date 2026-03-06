@@ -24,6 +24,8 @@ def default_config():
         "window_x": -1,
         "window_y": -1,
         "markdown_enabled": True,
+        "settings_shortcut": "Ctrl+`",
+        "quit_shortcut": "Ctrl+Q",
     }
 
 

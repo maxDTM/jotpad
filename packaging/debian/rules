@@ -10,5 +10,8 @@ override_dh_auto_install:
 		debian/jotpad/usr/share/applications/com.jotpad.Jotpad.desktop
 	install -Dm644 data/icons/jotpad.svg \
 		debian/jotpad/usr/share/icons/hicolor/scalable/apps/jotpad.svg
+	install -dm755 debian/jotpad/usr/share/jotpad/themes
+	install -Dm644 data/themes/*.conf \
+		debian/jotpad/usr/share/jotpad/themes/
 	install -Dm644 man/jotpad.1 \
 		debian/jotpad/usr/share/man/man1/jotpad.1

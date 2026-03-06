@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jotpad"
-version = "1.0.0"
+version = "1.1.0"
 description = "A minimal single-note editor with live markdown formatting"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}

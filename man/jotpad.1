@@ -1,4 +1,4 @@
-.TH JOTPAD 1 "2025" "jotpad 1.0.0" "User Commands"
+.TH JOTPAD 1 "2026" "jotpad 1.1.0" "User Commands"
 .SH NAME
 jotpad \- minimal single-note editor with live markdown formatting
 .SH SYNOPSIS
@@ -21,13 +21,64 @@ Live inline markdown formatting (headings, bold, italic, code, links)
 .IP \(bu 2
 Ctrl+click to open hyperlinks
 .IP \(bu 2
-Four built-in themes: Dark, Light, Solarized Dark, Solarized Light
+Configurable keyboard shortcuts for settings panel and quit
+.IP \(bu 2
+External theme files with user override support
 .IP \(bu 2
 Configurable font family and size
 .IP \(bu 2
 Markdown formatting can be toggled on/off
 .IP \(bu 2
 Window size and position remembered across sessions
+.IP \(bu 2
+Note file is moved when changing storage location
+.SH KEYBOARD SHORTCUTS
+.TP
+.B Ctrl+` (default)
+Toggle the settings panel. Configurable via settings.
+.TP
+.B Ctrl+Q (default)
+Quit the application. Configurable via settings.
+.SH THEMES
+Jotpad loads theme files from two locations:
+.TP
+.I /usr/share/jotpad/themes/
+System-wide themes installed with the package.
+.TP
+.I ~/.config/jotpad/themes/
+User themes. Files here override system themes with the same filename.
+.PP
+Theme files use plain key=value format with a .conf extension. Example:
+.PP
+.RS
+.nf
+# My custom theme
+name = My Theme
+bg = #282828
+text = #ebdbb2
+highlight = #3c3836
+hyperlink = #83a598
+md_syntax = #665c54
+surface = #1d2021
+surface2 = #3c3836
+border = #504945
+accent = #83a598
+muted = #928374
+heading1 = #ebdbb2
+heading2 = #d5c4a1
+heading3 = #bdae93
+bold = #fe8019
+italic = #d3869b
+code = #b8bb26
+code_bg = #1d2021
+scrollbar = #504945
+scrollbar_hover = #665c54
+.fi
+.RE
+.PP
+To create a custom theme, copy an existing .conf file from
+/usr/share/jotpad/themes/ to ~/.config/jotpad/themes/ and edit it.
+New themes appear in the settings panel automatically.
 .SH FILES
 .TP
 .I ~/.config/jotpad/config
@@ -36,7 +87,7 @@ Configuration file in plain key=value format.
 The configuration file supports the following keys:
 .TP
 .B theme
-One of: dark, light, solarized_dark, solarized_light (default: dark)
+Theme slug matching a .conf filename (default: dark)
 .TP
 .B font_family
 Font family name (default: monospace)
@@ -49,6 +100,12 @@ Absolute path to the note file
 .TP
 .B markdown_enabled
 Enable live markdown formatting: true or false (default: true)
+.TP
+.B settings_shortcut
+Keyboard shortcut to toggle settings panel (default: Ctrl+`)
+.TP
+.B quit_shortcut
+Keyboard shortcut to quit (default: Ctrl+Q)
 .TP
 .B window_width
 Window width in pixels
@@ -64,8 +121,8 @@ Window Y position
 .SH ENVIRONMENT
 .TP
 .B XDG_CONFIG_HOME
-If set, configuration is stored under $XDG_CONFIG_HOME/jotpad/ instead
-of ~/.config/jotpad/.
+If set, configuration and user themes are stored under
+$XDG_CONFIG_HOME/jotpad/ instead of ~/.config/jotpad/.
 .SH LICENSE
 GNU General Public License v3.0 or later.
 .SH SEE ALSO

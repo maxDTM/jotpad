@@ -1,3 +1,9 @@
+jotpad (1.1.0-1) stable; urgency=medium
+
+  * Bugfixes and feature improvements.
+
+ -- Max Altshuler <m@jotpad.dev>  Fri, Mar 2026 02:24:00 +0000
+
 jotpad (1.0.0-1) unstable; urgency=medium
 
   * Initial release.

@@ -1,6 +1,6 @@
 # Maintainer: Max Altshuler
 pkgname=jotpad
-pkgver=1.0.0
+pkgver=1.1.0
 pkgrel=1
 pkgdesc="Minimal single-note editor with live markdown formatting"
 arch=('any')
@@ -9,7 +9,7 @@ license=('GPL-3.0-or-later')
 depends=('python>=3.9' 'pyside6')
 makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
 source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('8ae2b6d5bdf8cb66c0a5d7173610924a605fe18b8236e1cc0ead654bbda1bdd2')
 
 build() {
     cd "${pkgname}-${pkgver}"
@@ -23,6 +23,11 @@ package() {
     # Desktop entry
     install -Dm644 data/com.jotpad.Jotpad.desktop \
         "${pkgdir}/usr/share/applications/com.jotpad.Jotpad.desktop"
+
+    # Themes
+    install -dm755 "${pkgdir}/usr/share/jotpad/themes"
+    install -Dm644 data/themes/*.conf \
+        "${pkgdir}/usr/share/jotpad/themes/"
 
     # Icon
     install -Dm644 data/icons/jotpad.svg \

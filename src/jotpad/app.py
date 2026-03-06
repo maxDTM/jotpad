@@ -7,11 +7,11 @@ from PySide6.QtWidgets import (
     QApplication, QMainWindow, QHBoxLayout, QVBoxLayout,
     QWidget, QFrame, QFileDialog,
 )
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QFont, QIcon
+from PySide6.QtCore import Qt, QTimer, QEvent
+from PySide6.QtGui import QFont, QIcon, QKeySequence, QShortcut, QColor
 
 from jotpad.config import CONFIG_DIR, load_config, save_config
-from jotpad.themes import THEMES
+from jotpad.themes import load_themes, get_theme, get_display_names
 from jotpad.highlighter import MarkdownHighlighter
 from jotpad.widgets import GearButton, NoteEditor, SettingsPanel
 
@@ -60,9 +60,14 @@ class JotpadWindow(QMainWindow):
         # Gear button overlay
         self.gear_btn = GearButton(parent=self.editor)
         self.gear_btn.clicked.connect(self._toggle_settings)
+        self._setup_shortcut()
+        self.editor.viewport().installEventFilter(self)
+
+        self.themes = load_themes()
+
 
         # Markdown highlighter
-        theme = THEMES[self.config.get("theme", "dark")]
+        theme = get_theme(self.themes, self.config.get("theme", "dark"))
         self.highlighter = MarkdownHighlighter(
             self.editor.document(),
             theme,
@@ -84,9 +89,19 @@ class JotpadWindow(QMainWindow):
         else:
             self._load_note()
 
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        self.gear_btn.move(self.editor.width() - 44, 10)
+        self._reposition_gear()
+
+    def eventFilter(self, obj, event):
+        if obj == self.editor.viewport() and event.type() == QEvent.Type.Resize:
+            self._reposition_gear()
+        return super().eventFilter(obj, event)
+        if self.settings_panel.isVisible():
+            self._resize_settings_panel()
+
+    def _reposition_gear(self):
+        vp = self.editor.viewport()
+        self.gear_btn.move(vp.width() - -12, 8)
+        self.gear_btn.raise_()
 
     def closeEvent(self, event):
         self.config["window_width"] = self.width()
@@ -142,15 +157,32 @@ class JotpadWindow(QMainWindow):
         self.save_timer.start()
 
     def _toggle_settings(self):
-        self.settings_panel.setVisible(not self.settings_panel.isVisible())
+        visible = not self.settings_panel.isVisible()
+        self.settings_panel.setVisible(visible)
+        if visible:
+            self._resize_settings_panel()
+        self._reposition_gear()
+
+    def _resize_settings_panel(self):
+        panel_width = max(200, int(self.width() * 0.22))
+        self.settings_panel.setFixedWidth(panel_width)
+        font_size = max(22, min(32, panel_width // 22))
+        self.settings_panel.setStyleSheet(
+            self.settings_panel.styleSheet() + f"\n* {{ font-size: {font_size}px; }}"
+        )
 
     def _on_settings_changed(self):
+        self.themes = load_themes()
+        self.settings_panel.refresh_themes(self.themes)
         self._apply_theme()
+        self._setup_shortcut()
         self._load_note()
 
     def _apply_theme(self):
         theme_name = self.config.get("theme", "dark")
-        t = THEMES.get(theme_name, THEMES["dark"])
+        t = get_theme(self.themes, self.config.get("theme", "dark"))
+        sc = QColor(t['floating_widgets'])
+        r, g, b = sc.red(), sc.green(), sc.blue()
         font_family = self.config.get("font_family", "monospace")
         font_size = self.config.get("font_size", 14)
 
@@ -162,23 +194,26 @@ class JotpadWindow(QMainWindow):
                 color: {t['text']};
                 selection-background-color: {t['highlight']};
                 border: none;
-                padding: 24px 32px;
+                padding: 24px 26px 24px 32px;
                 font-family: '{font_family}';
                 font-size: {font_size}px;
             }}
             QScrollBar:vertical {{
-                background: {t['bg']};
+                background: transparent;
                 width: 8px;
                 border-radius: 4px;
-                margin: 4px 2px;
+                margin: 25px 4px 4px 2px;
             }}
             QScrollBar::handle:vertical {{
-                background: {t['scrollbar']};
+                background: rgba({r}, {g}, {b}, 0.3);
                 border-radius: 4px;
                 min-height: 30px;
             }}
             QScrollBar::handle:vertical:hover {{
-                background: {t['scrollbar_hover']};
+                background: {t['floating_widgets_hover']};
+            }}
+            QScrollBar::handle:vertical:pressed {{
+                background: {t['floating_widgets_hover']};
             }}
             QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
                 height: 0;
@@ -192,10 +227,23 @@ class JotpadWindow(QMainWindow):
         self.editor.setFont(font)
         self.editor.document().setDefaultFont(font)
 
-        self.gear_btn.set_color(t["muted"])
+        self.gear_btn.set_color(t["floating_widgets"], 0.3)
         self.settings_panel.apply_theme(t)
         self.highlighter.set_theme(t)
         self.highlighter.set_enabled(self.config.get("markdown_enabled", True))
+
+    def _setup_shortcut(self):
+        shortcut_str = self.config.get("settings_shortcut", "Ctrl+`")
+        if hasattr(self, '_settings_shortcut'):
+            self._settings_shortcut.deleteLater()
+        self._settings_shortcut = QShortcut(QKeySequence(shortcut_str), self)
+        self._settings_shortcut.activated.connect(self._toggle_settings)
+
+        quit_str = self.config.get("quit_shortcut", "Ctrl+Q")
+        if hasattr(self, '_quit_shortcut'):
+            self._quit_shortcut.deleteLater()
+        self._quit_shortcut = QShortcut(QKeySequence(quit_str), self)
+        self._quit_shortcut.activated.connect(self.close)
 
 
 def main():
