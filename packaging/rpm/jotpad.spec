@@ -1,5 +1,5 @@
 Name:           jotpad
-Version:        1.1.0
+Version:        1.1.1
 Release:        1%{?dist}
 Summary:        Minimal single-note editor with live markdown formatting
 License:        GPL-3.0-or-later

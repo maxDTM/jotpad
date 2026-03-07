@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jotpad"
-version = "1.1.0"
+dynamic = ["version"]
 description = "A minimal single-note editor with live markdown formatting"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
@@ -35,3 +35,5 @@ Issues = "https://github.com/maxDTM/jotpad/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+[tool.setuptools.dynamic]
+version = {attr = "jotpad.__version__"}

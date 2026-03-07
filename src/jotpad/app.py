@@ -1,6 +1,8 @@
 """Main application window for Jotpad."""
 
 import sys
+import fcntl
+import os
 from pathlib import Path
 
 from PySide6.QtWidgets import (
@@ -248,8 +250,19 @@ class JotpadWindow(QMainWindow):
 
 def main():
     """Application entry point."""
+    # Single instance lock
+    lock_path = Path(
+        os.environ.get("XDG_RUNTIME_DIR", "/tmp")
+    ) / "jotpad.lock"
+    lock_file = open(lock_path, "w")
+    try:
+        fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        print("Jotpad is already running.")
+        sys.exit(1)
+
     app = QApplication(sys.argv)
-    app.setApplicationName("Jotpad")
+    app.setApplicationName("jotpad")
     app.setApplicationDisplayName("Jotpad")
     app.setDesktopFileName("com.jotpad.Jotpad")
 
