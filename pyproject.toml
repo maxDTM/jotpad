@@ -10,7 +10,7 @@ readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
 requires-python = ">=3.9"
 authors = [
-    { name = "Max Altshuler" },
+    { name = "Max Alt" },
 ]
 keywords = ["notes", "editor", "markdown", "minimal"]
 classifiers = [

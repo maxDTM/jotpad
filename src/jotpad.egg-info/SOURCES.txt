@@ -1,0 +1,16 @@
+LICENSE
+README.md
+pyproject.toml
+src/jotpad/__init__.py
+src/jotpad/__main__.py
+src/jotpad/app.py
+src/jotpad/config.py
+src/jotpad/highlighter.py
+src/jotpad/themes.py
+src/jotpad/widgets.py
+src/jotpad.egg-info/PKG-INFO
+src/jotpad.egg-info/SOURCES.txt
+src/jotpad.egg-info/dependency_links.txt
+src/jotpad.egg-info/entry_points.txt
+src/jotpad.egg-info/requires.txt
+src/jotpad.egg-info/top_level.txt

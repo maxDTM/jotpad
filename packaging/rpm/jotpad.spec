@@ -53,5 +53,5 @@ install -Dm644 man/jotpad.1 \
 %{_mandir}/man1/jotpad.1*
 
 %changelog
-* Thu Jan 01 2025 Max Altshuler - 1.0.0-1
+* Monday March 9 Max Alt - 1.1.2-1
 - Initial release

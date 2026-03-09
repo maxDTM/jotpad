@@ -1,14 +1,14 @@
 Source: jotpad
 Section: editors
 Priority: optional
-Maintainer: Max Altshuler <m@jotpad.dev>
+Maintainer: Max Alt <m@adine.design>
 Build-Depends: debhelper-compat (= 13),
                dh-python,
                python3-all,
                python3-setuptools,
                python3-wheel
 Standards-Version: 4.6.2
-Homepage: https://github.com/OWNER/jotpad
+Homepage: https://github.com/maxDTM/jotpad
 Rules-Requires-Root: no
 
 Package: jotpad

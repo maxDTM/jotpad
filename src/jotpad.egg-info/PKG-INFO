@@ -1,0 +1,71 @@
+Metadata-Version: 2.4
+Name: jotpad
+Version: 1.1.2
+Summary: A minimal single-note editor with live markdown formatting
+Author: Max Altshuler
+License: GPL-3.0-or-later
+Project-URL: Homepage, https://github.com/maxDTM/jotpad
+Project-URL: Repository, https://github.com/maxDTM/jotpad
+Project-URL: Issues, https://github.com/maxDTM/jotpad/issues
+Keywords: notes,editor,markdown,minimal
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: X11 Applications :: Qt
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Text Editors
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: PySide6>=6.5
+Dynamic: license-file
+
+# Jotpad
+
+A minimal single-note editor for Linux with live markdown formatting.
+
+## Features
+
+- Single persistent note — opens the same file every time
+- Auto-saves when you stop typing (800ms debounce)
+- Remembers window size and position (position only on X11)
+- Live markdown formatting (headings, bold, italic, code, links)
+- Ctrl+click to open hyperlinks
+- Configurable font, font size, and note storage location
+
+## Install
+
+### From source
+
+### Arch Linux (AUR)
+
+```sh
+paru -S jotpad
+```
+
+## Run
+
+```sh
+jotpad
+```
+
+Or without installing:
+
+cd into cloned directory
+
+```sh
+python -m jotpad
+```
+
+## Configuration
+
+Stored at `~/.config/jotpad/config` in plain `key = value` format.
+Respects `$XDG_CONFIG_HOME`.
+
+See `man jotpad` for all configuration options.
+
+## License
+
+GPL-3.0-or-later
+
+---
