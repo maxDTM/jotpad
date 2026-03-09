@@ -33,7 +33,7 @@ class JotpadWindow(QMainWindow):
         self.resize(w, h)
         x = self.config.get("window_x", -1)
         y = self.config.get("window_y", -1)
-        if x >= 0 and y >= 0:
+        if x != -9999 and y != -9999:
             self.move(x, y)
 
         # Central widget
@@ -108,8 +108,9 @@ class JotpadWindow(QMainWindow):
     def closeEvent(self, event):
         self.config["window_width"] = self.width()
         self.config["window_height"] = self.height()
-        self.config["window_x"] = self.x()
-        self.config["window_y"] = self.y()
+        pos = self.pos()
+        self.config["window_x"] = pos.x()
+        self.config["window_y"] = pos.y()
         save_config(self.config)
         self._save_note()
         super().closeEvent(event)

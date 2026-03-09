@@ -6,38 +6,19 @@ A minimal single-note editor for Linux with live markdown formatting.
 
 - Single persistent note — opens the same file every time
 - Auto-saves when you stop typing (800ms debounce)
+- Remembers window size and position (position only on X11)
 - Live markdown formatting (headings, bold, italic, code, links)
 - Ctrl+click to open hyperlinks
-- Four themes: Dark, Light, Solarized Dark, Solarized Light
 - Configurable font, font size, and note storage location
-- Markdown formatting can be toggled on/off
-- Remembers window size and position
 
 ## Install
 
 ### From source
 
-```sh
-pip install .
-```
-
 ### Arch Linux (AUR)
 
 ```sh
 paru -S jotpad
-```
-
-### Fedora (COPR)
-
-```sh
-sudo dnf copr enable maxDTM/jotpad
-sudo dnf install jotpad
-```
-
-### Debian/Ubuntu
-
-```sh
-sudo dpkg -i jotpad_1.0.0-1_all.deb
 ```
 
 ## Run
@@ -47,6 +28,8 @@ jotpad
 ```
 
 Or without installing:
+
+cd into cloned directory
 
 ```sh
 python -m jotpad

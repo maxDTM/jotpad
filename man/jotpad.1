@@ -5,9 +5,8 @@ jotpad \- minimal single-note editor with live markdown formatting
 .B jotpad
 .SH DESCRIPTION
 .B Jotpad
-is a minimal desktop note editor that manages a single persistent note file.
-It auto-saves when typing stops and provides live inline markdown formatting
-with clickable hyperlinks.
+is a minimal desktop note editor that manages a single persistent note file. Similar to Sticky Notes for Windows, but better.
+It auto-saves when typing stops and provides live inline markdown formatting with clickable hyperlinks.
 .PP
 On first run, Jotpad prompts for a file location to store the note.
 On subsequent runs, it opens the same file automatically.
@@ -17,19 +16,19 @@ Single persistent note file
 .IP \(bu 2
 Auto-save with 800ms debounce after typing stops
 .IP \(bu 2
-Live inline markdown formatting (headings, bold, italic, code, links)
+Remembers window size and position (position only on X11)
 .IP \(bu 2
 Ctrl+click to open hyperlinks
 .IP \(bu 2
-Configurable keyboard shortcuts for settings panel and quit
+Live markdown formatting (headings, bold, italic, code, links)
+.IP \(bu 2
+Configurable keyboard shortcuts
 .IP \(bu 2
 External theme files with user override support
 .IP \(bu 2
 Configurable font family and size
 .IP \(bu 2
 Markdown formatting can be toggled on/off
-.IP \(bu 2
-Window size and position remembered across sessions
 .IP \(bu 2
 Note file is moved when changing storage location
 .SH KEYBOARD SHORTCUTS
@@ -71,8 +70,8 @@ bold = #fe8019
 italic = #d3869b
 code = #b8bb26
 code_bg = #1d2021
-scrollbar = #504945
-scrollbar_hover = #665c54
+floating_widgets = #504945
+floating_widgets_hover = #665c54
 .fi
 .RE
 .PP
